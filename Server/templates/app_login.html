@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>客户端登录</title>
+</head>
+<body>
+<p>
+    在设计上这个网页不是给人看的，放飞自我了啊。 网页接口是<a href="/manager">这里</a>
+</p>
+<p>
+    接下来请 POST 这个网址, 并上传以下值:
+</p>
+<div>
+<p>
+    值nuc_id表示自身的令牌, 如果为空则服务器会返回一个新的。 一般情况下nuc_id会是md5(注册时间+主机名称+登录用户名);
+</p>
+<p>
+    值nuc_name表示电脑名称;
+</p>
+<p>
+    值nuc_user表示登录用户名。
+</p>
+</div>
+
+<div>
+    <p>完成以上后, 管理端将显示该nuc的信息</p>
+</div>
+
+</body>
+</html>

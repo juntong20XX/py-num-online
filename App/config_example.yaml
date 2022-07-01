@@ -1,0 +1,10 @@
+# This is the template of application config
+config_file: "~/.pyNumOnline/nuc_config.yaml"
+upload_file: "~/.pyNumOnline/nuc_save.txt"
+upload:
+  signal_port: 5432
+  command_text: send_file
+server:
+  server_port: 5001
+  ping_delay: 500  # (ms)
+  reconnect_times: 3  # The number of attempts to reconnect when the connection is interrupted

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ nuc.user }}@{{ nuc.name }}</title>
+    <style>
+        table {
+            border-right: 1px solid #000000;
+            border-bottom: 1px solid #000000;
+            text-align: center;
+        }
+
+        table th {
+            border-left: 1px solid #000000;
+            border-top: 1px solid #000000;
+        }
+
+        table td {
+            border-left: 1px solid #000000;
+            border-top: 1px solid #000000;
+        }
+    </style>
+</head>
+<body>
+
+<h1>{{ nuc.user }}@{{ nuc.name }}</h1>
+
+<div>
+    <p><strong>id:</strong>{{ nuc.token }}</p>
+</div>
+
+<p></p>
+
+<div>
+    <p>刷新定时器: <strong id="auto-refresh">开(点击关闭)</strong></p>
+    <script>
+        let refresh_switch = document.getElementById("auto-refresh");
+        let timeout = function () {
+            if (refresh_switch.innerText === '开(点击关闭)') {
+                location.reload();
+            }
+        }
+        refresh_switch.onclick = function () {
+            if (refresh_switch.innerText === '开(点击关闭)') {
+                refresh_switch.innerText = "关(点击打开)";
+            } else {
+                refresh_switch.innerText = "开(点击关闭)";
+            }
+        }
+        setInterval(timeout, 1000);  //指定1秒查询一次
+    </script>
+</div>
+
+<div style="background-color: darkgrey">
+    <p> ({{ nuc.upload_file }})数据:</p>
+    <table style="width: 70%">
+        <tr>
+            <th style="background-color: darkgreen"> ╲ </th>
+            {% for x in range(column) %}
+                <th style="background-color: darkgreen">{{ x }}</th>
+            {% endfor %}
+        </tr>
+        <tbody>
+        {% for ls in nuc.data %}
+            <tr>
+                <th style="background-color: darkgreen">{{ loop.index0 }}</th>
+                {% for i in ls %}
+                    <th>{{ i }}</th>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <a href="/manager">返回管理页</a>
+</div>
+</body>
+</html>

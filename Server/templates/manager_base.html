@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>NUM Online</title>
+<style>
+    table {
+        border-right: 1px solid #000000;
+        border-bottom: 1px solid #000000;
+        text-align: center;
+    }
+
+    table th {
+        border-left: 1px solid #000000;
+        border-top: 1px solid #000000;
+    }
+
+    table td {
+        border-left: 1px solid #000000;
+        border-top: 1px solid #000000;
+    }
+</style>
+</head>
+<body>
+<h1>
+    在线数字模块
+</h1>
+<div>
+    <p>刷新定时器: <strong id="auto-refresh">开(点击关闭)</strong></p>
+    <script>
+        let refresh_switch = document.getElementById("auto-refresh");
+        let timeout = function () {
+            if (refresh_switch.innerText === '开(点击关闭)') {
+                location.reload();
+            }
+        }
+        refresh_switch.onclick = function () {
+            if (refresh_switch.innerText === '开(点击关闭)') {
+                refresh_switch.innerText = "关(点击打开)";
+            } else {
+                refresh_switch.innerText = "开(点击关闭)";
+            }
+        }
+        setInterval(timeout, 1000);  //指定1秒查询一次
+    </script>
+</div>
+{#<div style="background-color: cadetblue">#}
+{#    <p><strong>当前写入客户端文件</strong>：{{ nuc_save_file_path }}</p>#}
+{#    <form method="post">#}
+{#        <label>#}
+{#            修改写入文件路径#}
+{#            <input type="text" name="new nuc save file path" style="width: 50%" value={{ nuc_save_file_path }}/>#}
+{#        </label>#}
+{#        <button type="submit" name="edit nuc save file" value="edit nuc save file">提交更改</button>#}
+{#    </form>#}
+{#</div>#}
+<p>-----------</p><! 分割线>
+<div style="background-color: cornflowerblue">
+    <p><strong>已连接的客户端 ( {{ nucs|length }} )</strong></p>
+    <table title="已连接的客户端">
+        <tr>
+            <th>number</th>
+            <th>name</th>
+            <th>token</th>
+            <th>operate</th>
+            <th>前一次上传(s)</th>
+        </tr>
+        <tbody>
+        {% for nuc in nucs %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <! index是jinja2内置的属性>
+                <td>{{ nuc.name }}</td>
+                <td>{{ nuc.token }}</td>
+                <td><a href="/manager/id={{ nuc.token }}" style="color: brown">修改</a></td>
+                <td>{{ nuc.last }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
