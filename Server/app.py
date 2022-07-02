@@ -175,9 +175,7 @@ def manager_id(nuc_id):
             break
     else:
         return manager_error(error="找不到id")
-    return flask.render_template("manager_id.html",
-                                 column=max(len(i) for i in nuc["data"]),
-                                 nuc=nuc)
+    return flask.render_template("manager_id.html", column=max(len(i) for i in nuc["data"]), nuc=nuc)
 
 
 if __name__ == '__main__':
