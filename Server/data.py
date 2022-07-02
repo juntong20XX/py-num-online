@@ -28,7 +28,7 @@ CONFIG_DATA = {
     }
 }
 
-# 已连接的 nuc  TODO: 刷新已连接的API
+# 已连接的 nuc
 # 元素格式:
 # {
 #     "name": "test",
@@ -41,6 +41,14 @@ CONFIG_DATA = {
 # }
 nuc = [
 ]
+
+# 跟踪并缓存的数据
+# 元素格式:
+# {
+#    "nuc": {...},  # 此数据nuc信息, 就是nuc列表的元素  TODO: 当新nuc登陆时，检查track_and_cache_data中是否有此nuc，有:链接
+#
+# }
+track_and_cache_data = []
 
 
 def get_real_path(path: str):

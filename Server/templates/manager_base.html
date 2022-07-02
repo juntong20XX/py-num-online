@@ -79,5 +79,29 @@
         </tbody>
     </table>
 </div>
+
+<div style="background-color: cadetblue">
+    <p><strong>已跟踪并缓存的数据 ( {{ track_and_cache_data|length }} )</strong></p>
+    <table title="已连接的客户端">
+        <tr>
+            <th>index</th>
+            <th>name</th>
+            <th>token</th>
+            <th>前一次上传(s)</th>
+        </tr>
+        <tbody>
+        {% for nuc in nucs %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <! index是jinja2内置的属性>
+                <td>{{ track_and_cache_data.nuc.name }}</td>
+                <td>{{ track_and_cache_data.nuc.token }}</td>
+                <td>{{ track_and_cache_data.nuc.last }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
 </body>
 </html>
