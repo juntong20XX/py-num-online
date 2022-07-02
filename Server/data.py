@@ -45,7 +45,7 @@ nuc = [
 # 跟踪并缓存的数据
 # 元素格式:
 # {
-#    "nuc": {...},  # 此数据nuc信息, 就是nuc列表的元素  TODO: 当新nuc登陆时，检查track_and_cache_data中是否有此nuc，有:链接
+#    "nuc": {...},  # 此数据nuc信息, 就是nuc列表的元素
 #
 # }
 track_and_cache_data = []
@@ -127,6 +127,14 @@ def refresh_nuc():
             index_for_remove[i] -= 1
 
 
+def get_nuc_info_from_track_and_cache_data():
+    """
+    :return: 被跟踪且缓存的列表中的nuc数据
+    """
+    for data in track_and_cache_data:
+        yield data["nuc"]
+
+
 def nuc_login(nuc_id, nuc_name, nuc_user) -> int:
     """
     添加登录
@@ -145,6 +153,13 @@ def nuc_login(nuc_id, nuc_name, nuc_user) -> int:
     code = nuc_check_token(nuc_id)
     if code != 0:
         return code
-    # 添加登录信息
-    nuc.append({"token": nuc_id, "user": nuc_user, "name": nuc_name, "last": 0, "timestamp": time.time()})
+    for nuc_data in get_nuc_info_from_track_and_cache_data():
+        if nuc_data["name"] == nuc_name and nuc_data["user"] == nuc_user:
+            # 发现正在登陆的nuc在缓存中
+            nuc_data["timestamp"] = time.time()  # 更新时间戳
+            nuc.append(nuc_data)
+            break
+    else:
+        # 建立并添加新的登录信息
+        nuc.append({"token": nuc_id, "user": nuc_user, "name": nuc_name, "last": 0, "timestamp": time.time()})
     return 0
