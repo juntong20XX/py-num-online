@@ -6,6 +6,8 @@
 import os
 import re
 import time
+import typing
+import collections
 
 import yaml
 
@@ -20,6 +22,9 @@ CONFIG_DATA = {
     "paths_nuc": {  # nuc 端的路径配置
         "upload_path": None,
         "config_path": "~/.pyNumOnline/config.yaml",
+    },
+    "paths_server": {  # 服务器端配置
+        # "track_to": "~/.pyNumOnline/{nuc_name}/track.csv",  # 服务器端保存数据位置
     },
     "connection": {  # 连接设置
         "nuc_app_cookie": {
@@ -46,7 +51,8 @@ nuc = [
 # 元素格式:
 # {
 #    "nuc": {...},  # 此数据nuc信息, 就是nuc列表的元素
-#
+#    "data": {time_1: {...}, time_2: {...}},  # 数据情况，单位是ns
+#    "last_update": {...}  # 上次更新的时间
 # }
 track_and_cache_data = []
 
@@ -163,3 +169,13 @@ def nuc_login(nuc_id, nuc_name, nuc_user) -> int:
         # 建立并添加新的登录信息
         nuc.append({"token": nuc_id, "user": nuc_user, "name": nuc_name, "last": 0, "timestamp": time.time()})
     return 0
+
+
+def track_to_string(track_data: dict[int: typing.Iterable[list]]) -> str:
+    """
+    将追踪并缓存的数据转换为yaml文本
+    """
+    data = collections.OrderedDict()  # XXX: 好像现在普通的字典也有序了？
+    for key in sorted(track_data):
+        data[key] = track_data[key]
+    return yaml.safe_dump_all(data)

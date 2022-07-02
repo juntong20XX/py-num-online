@@ -53,17 +53,17 @@
 
 <div style="background-color: darkgrey">
     <p> ({{ nuc.upload_file }})数据:</p>
-    <table style="width: 70%">
+    <table style="background-color: darkgreen; width: 70%">
         <tr>
-            <th style="background-color: darkgreen"> ╲ </th>
+            <th> ╲</th>
             {% for x in range(column) %}
-                <th style="background-color: darkgreen">{{ x }}</th>
+                <th>{{ x }}</th>
             {% endfor %}
         </tr>
         <tbody>
         {% for ls in nuc.data %}
             <tr>
-                <th style="background-color: darkgreen">{{ loop.index0 }}</th>
+                <th>{{ loop.index0 }}</th>
                 {% for i in ls %}
                     <th>{{ i }}</th>
                 {% endfor %}
@@ -72,6 +72,16 @@
         </tbody>
     </table>
 </div>
+
+<div>
+    <button name="track" value="{{ is_tracking }}">{{ is_tracking }}</button>
+</div>
+
+{% if is_tracking == "停止追踪" %}
+    <td>
+        <button name="save tracked data" value="{{ nuc.token }}">保存追踪的数据</button>
+    </td>
+{% endif %}
 
 <div>
     <a href="/manager">返回管理页</a>

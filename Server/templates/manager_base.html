@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>NUM Online</title>
-<style>
-    table {
-        border-right: 1px solid #000000;
-        border-bottom: 1px solid #000000;
-        text-align: center;
-    }
+    <style>
+        table {
+            border-right: 1px solid #000000;
+            border-bottom: 1px solid #000000;
+            text-align: center;
+        }
 
-    table th {
-        border-left: 1px solid #000000;
-        border-top: 1px solid #000000;
-    }
+        table th {
+            border-left: 1px solid #000000;
+            border-top: 1px solid #000000;
+        }
 
-    table td {
-        border-left: 1px solid #000000;
-        border-top: 1px solid #000000;
-    }
-</style>
+        table td {
+            border-left: 1px solid #000000;
+            border-top: 1px solid #000000;
+        }
+    </style>
 </head>
 <body>
 <h1>
@@ -88,6 +88,8 @@
             <th>name</th>
             <th>token</th>
             <th>前一次上传(s)</th>
+            <th>前一次更新(s)</th>
+            <th>写入操作</th>
         </tr>
         <tbody>
         {% for nuc in nucs %}
@@ -97,6 +99,10 @@
                 <td>{{ track_and_cache_data.nuc.name }}</td>
                 <td>{{ track_and_cache_data.nuc.token }}</td>
                 <td>{{ track_and_cache_data.nuc.last }}</td>
+                <td>{{ track_and_cache_data.last_update }}</td>
+                <td>
+                    <button name="save tracked data" value="{{ track_and_cache_data.nuc.token }}">保存追踪的数据</button>
+                </td>
             </tr>
         {% endfor %}
         </tbody>

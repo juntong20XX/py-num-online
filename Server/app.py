@@ -10,6 +10,7 @@ import flask
 # 内置模块
 import os
 import re
+import io
 import time
 # 项目模块
 import data
@@ -41,15 +42,33 @@ def manager():
         if request.form.get("edit nuc save file"):
             # 修改NUC上的保存文件
             return manager_edit_nuc_save_file()
+        elif request.form.get("SAVE TRACKED DATA"):
+            # 保存跟踪中的数据集
+            pass
     elif request.method == "GET":
         # Get request
         data.refresh_nuc()
         return flask.render_template("manager_base.html",
-                                     # nuc_save_file_path=data.CONFIG_DATA["paths_nuc"]["save_path"],
+                                     trace_and_cache_data=data.track_and_cache_data,
                                      nucs=data.nuc)
     else:
         # not support
         return 'no support method "%s"' % request.method
+
+
+def manager_save_track():
+    """
+    返回被更新的文件
+    """
+    nuc_id = request.form.get("save tracked data")
+    for track_data in data.track_and_cache_data:
+        if track_data["nuc"]["token"] == nuc_id:
+            break
+    else:
+        return manager_error(error="找不到token对应的数据")
+    data_string = data.track_to_string(data)
+    steam = io.StringIO(data_string)
+    return flask.send_file(steam, as_attachment=True)  # NOTE: 我觉得这段没问题......
 
 
 def manager_error(**kwargs):
@@ -168,14 +187,35 @@ def app_login():
         return 'no support method "%s"' % request.method
 
 
-@app.route("/manager/id=<nuc_id>")
+@app.route("/manager/id=<nuc_id>", methods=["GET", "POST"])
 def manager_id(nuc_id):
+    if request.method == "GET":
+        return manager_id_method_get(nuc_id)
+    if request.form.get("save tracked data"):
+        # 保存跟踪中的数据
+        return manager_save_track()  # 两个页面api是一致的，可以放心调用
+    elif request.form.get("track"):
+        # 反转跟踪状态
+        return manager_id_reversal_tracking_state(nuc_id)
+
+
+def manager_id_method_get(nuc_id):
     for nuc in data.nuc:
         if nuc["token"] == nuc_id:
             break
     else:
         return manager_error(error="找不到id")
-    return flask.render_template("manager_id.html", column=max(len(i) for i in nuc["data"]), nuc=nuc)
+    is_tracking = "停止追踪" if nuc["token"] in data.get_nuc_info_from_track_and_cache_data() else "开始跟踪"
+    return flask.render_template("manager_id.html",
+                                 column=max(len(i) for i in nuc["data"]), nuc=nuc, is_tracking=is_tracking)
+
+
+def manager_id_reversal_tracking_state(nuc_id):
+    """
+    供 manger_id 调用, 用于反转对某nuc的跟踪状态
+    """
+    # TODO: 添加or删除跟踪状态, 其实应该先写data的api
+    return manager_id_method_get(nuc_id)  # 返回值和get方法返回内容一致
 
 
 if __name__ == '__main__':
