@@ -14,6 +14,7 @@ import typing
 import threading
 import itertools
 import functools
+import subprocess
 
 import csv
 import yaml
@@ -24,6 +25,38 @@ VERSION = "0.0.1"
 
 class StopSettingIteration(Exception):
     pass
+
+
+def get_user_name(default="False") -> str:
+    if os.name == "win32":
+        # Windows system
+        return os.environ.get("USER" + "NAME", default)
+    elif os.name == "posix":
+        # Linux
+        return os.environ.get("USER", default)
+    else:
+        # else
+        try:
+            return subprocess.getoutput("whoami")
+        except OSError:
+            # XXX: I'm not sure this exception.
+            return default
+
+
+def get_computer_name(default="False"):
+    if os.name == "win32":
+        # Windows system
+        return os.environ.get("COMPUTER" + "NAME", default)
+    elif os.name == "posix":
+        # Linux
+        return os.environ.get("NAME", default)
+    else:
+        # else
+        try:
+            return subprocess.getoutput("hostname")
+        except OSError:
+            # XXX: I'm not sure this exception.
+            return default
 
 
 def edit_dict_sort_key(value):
@@ -327,7 +360,7 @@ def generate_config() -> dict:
               'upload_file': '~/.pyNumOnline/upload.csv',
               'search': {'ips': ["192.168.*.*"], 'timeout': 1, "threads": 10},
               'upload': {'signal_port': 5432, 'command_text': 'send_file'},
-              'server': {'server_port': 5001, 'upload_delay(s)': 500, 'reconnect_times': 30, 'ping_delay(s)': 1000}}
+              'server': {'server_port': 5001, 'upload_delay(s)': 500, 'reconnect_times': 40, 'ping_delay(s)': 15}}
     backup = copy.deepcopy(config)
     ans = None
     print(">>> 开始设置 <<<")
@@ -520,8 +553,8 @@ def scan_and_choose_url(ip_config, port, timeout, threads):
 
 def login(url: str, my_id: str | None) -> dict:
     r = requests.post(url, headers={"User-Agent": f"NumOnlineAPP/{VERSION}"},
-                      data={"nuc_name": os.environ.get('COMPUTER''NAME'),
-                            "nuc_user": os.environ.get('USER'    'NAME'),
+                      data={"nuc_name": get_computer_name(),
+                            "nuc_user": get_user_name(),
                             "nuc_id": my_id})
     r.raise_for_status()
     j = r.json()
@@ -538,14 +571,14 @@ def update_to_server(url, timeout=1, ping_times=3, ping_delay=1000, data=None, *
     if data:
         kwargs.update(data)
     for _ in range(ping_times):
-        r = requests.post(url, headers={"User-Agent": f"NumOnlineAPP/{VERSION}"},
-                          data=kwargs,
-                          timeout=timeout)
         try:
+            r = requests.post(url, headers={"User-Agent": f"NumOnlineAPP/{VERSION}"},
+                              data=kwargs,
+                              timeout=timeout)
             r.raise_for_status()
-        except requests.exceptions.HTTPError as err:
+        except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError) as err:
             print(type(err).__name__, err)
-            time.sleep(ping_delay / 1000)
+            time.sleep(ping_delay)
         else:
             break
     else:
@@ -622,9 +655,14 @@ def main(config_file: str, search: dict, upload_file: str, server: dict, **kwarg
             continue
         if time.time() - start > server["upload_delay(s)"] / 1000:
             print("上传数据 ...", end="", flush=True)
-            with open(os.path.expanduser(upload_file), "r", encoding="utf-8") as fp:
-                r = csv.reader(fp)
-                data = list(r)
+            try:
+                with open(os.path.expanduser(upload_file), "r", encoding="utf-8") as fp:
+                    r = csv.reader(fp)
+                    data = list(r)
+            except FileNotFoundError:
+                # 找不到文件
+                print("上传文件未找到")
+                continue
             for _ in range(timeout):
                 config = update_to_server(url_base + "/app_update", timeout, ping_times, ping_delay,
                                           {"data": format(data), "nuc_id": my_id})
