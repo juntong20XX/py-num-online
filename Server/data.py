@@ -29,7 +29,8 @@ CONFIG_DATA = {
     "connection": {  # 连接设置
         "nuc_app_cookie": {
             "User-Agent": "NumOnlineAPP/{VERSION}",
-        }
+        },
+        "nuc_disconnect_time(s)": 4,  # 若超过此时间nuc未更新数据，则断开连接
     }
 }
 
@@ -120,17 +121,19 @@ def nuc_check_token(token) -> int:
 
 
 def refresh_nuc():
+    """
+    更新nuc的时间数据。如果超过时间则删除连接。
+    """
     timestamp = time.time()
     index_for_remove = []
     for i, n in enumerate(nuc):
         last = timestamp - n["timestamp"]
         n["last"] = round(last, 1)
-        if last > 4:
-            index_for_remove.append(i)
+        if last > CONFIG_DATA["connection"]["nuc_disconnect_time(s)"]:
+            # 先将要删除的下标存入, 避免边迭代边修改
+            index_for_remove.append(i - len(index_for_remove))  # 减去 len(index_for_remove) 是为了适配已经删去部分值的nuc列表
     while index_for_remove:
         nuc.pop(index_for_remove.pop(0))
-        for i in range(len(index_for_remove)):
-            index_for_remove[i] -= 1
 
 
 def get_nuc_info_from_track_and_cache_data():
@@ -138,7 +141,9 @@ def get_nuc_info_from_track_and_cache_data():
     :return: 被跟踪且缓存的列表中的nuc数据
     """
     for data in track_and_cache_data:
-        yield data["nuc"]
+        nuc_data = data["nuc"]
+        if nuc_data in nuc:
+            yield nuc_data
 
 
 def nuc_login(nuc_id, nuc_name, nuc_user) -> int:
