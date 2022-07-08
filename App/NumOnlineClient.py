@@ -562,7 +562,7 @@ def login(url: str, my_id: str | None) -> dict:
         return j
     else:
         if my_id is None:
-            return login(url, j["id"])  # FIXME: 没有收集错误
+            return login(url, j["id"])  # FIXME: 没有收集该函数可能释放的错误
         else:
             raise Exception("服务器登录失败，错误代码", j["error-code"])
 
