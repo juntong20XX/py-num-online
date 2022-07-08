@@ -62,8 +62,9 @@
             <th>number</th>
             <th>name</th>
             <th>token</th>
-            <th>operate</th>
             <th>前一次上传(s)</th>
+            <th>点击查看</th>
+            <th>点击追踪</th>
         </tr>
         <tbody>
         {% for nuc in nucs %}
@@ -72,8 +73,15 @@
                 <! index是jinja2内置的属性>
                 <td>{{ nuc.name }}</td>
                 <td>{{ nuc.token }}</td>
-                <td><a href="/manager/id={{ nuc.token }}" style="color: brown">修改</a></td>
                 <td>{{ nuc.last }}</td>
+                <td><a href="/manager/id={{ nuc.token }}" style="color: brown">修改</a></td>
+                <td>
+                    {% if nuc in trace_and_cache_data["nuc"] %}
+                        <button name="record start" value="{{ nuc.id }}">开始记录</button>
+                    {% else %}
+                        <button name="record stop" value="{{ nuc.id }}">停止记录</button>
+                    {% endif %}
+                </td>
             </tr>
         {% endfor %}
         </tbody>

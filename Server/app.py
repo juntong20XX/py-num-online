@@ -112,6 +112,7 @@ def manager_edit_nuc_save_file():
     data.refresh_nuc()
     return flask.render_template("manager_base.html",
                                  nuc_save_file_path=new_nuc_save_path,
+                                 trace_and_cache_data=data.track_and_cache_data,
                                  nucs=data.nuc)
 
 
