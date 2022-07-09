@@ -451,7 +451,7 @@ def ping_function(ip, port, timeout) -> bool:
     try:
         r = requests.get(url, headers={"User-Agent": f"NumOnlineAPP/{VERSION}"}, timeout=timeout)
         r.raise_for_status()
-    except (requests.exceptions.InvalidSchema, requests.exceptions.ConnectTimeout):
+    except (requests.exceptions.InvalidSchema, requests.exceptions.ConnectionError):
         return False
     return r.url.endswith("/app_login")
 
@@ -562,7 +562,7 @@ def login(url: str, my_id: str | None) -> dict:
         return j
     else:
         if my_id is None:
-            return login(url, j["id"])  # FIXME: 没有收集该函数可能释放的错误
+            return login(url, j["id"])  # XXX : 不会收集错误
         else:
             raise Exception("服务器登录失败，错误代码", j["error-code"])
 

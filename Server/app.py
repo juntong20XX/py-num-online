@@ -49,7 +49,8 @@ def manager():
         # Get request
         data.refresh_nuc()
         return flask.render_template("manager_base.html",
-                                     trace_and_cache_data=data.track_and_cache_data,
+                                     track_and_cache_data=data.track_and_cache_data,
+                                     tracked_and_cached_nuc_list=list(data.get_nuc_info_from_track_and_cache_data()),  # FIXME: 列表显示不正确
                                      nucs=data.nuc)
     else:
         # not support
@@ -112,7 +113,8 @@ def manager_edit_nuc_save_file():
     data.refresh_nuc()
     return flask.render_template("manager_base.html",
                                  nuc_save_file_path=new_nuc_save_path,
-                                 trace_and_cache_data=data.track_and_cache_data,
+                                 track_and_cache_data=data.track_and_cache_data,
+                                 tracked_and_cached_nuc_list=list(data.get_nuc_info_from_track_and_cache_data()),
                                  nucs=data.nuc)
 
 

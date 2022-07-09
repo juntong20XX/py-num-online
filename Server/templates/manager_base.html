@@ -76,7 +76,7 @@
                 <td>{{ nuc.last }}</td>
                 <td><a href="/manager/id={{ nuc.token }}" style="color: brown">修改</a></td>
                 <td>
-                    {% if nuc in trace_and_cache_data["nuc"] %}
+                    {% if (nuc in tracked_and_cached_nuc_list) %} <!事实证明这个结构里不支持原生python代码>
                         <button name="record start" value="{{ nuc.id }}">开始记录</button>
                     {% else %}
                         <button name="record stop" value="{{ nuc.id }}">停止记录</button>
@@ -100,16 +100,16 @@
             <th>写入操作</th>
         </tr>
         <tbody>
-        {% for nuc in nucs %}
+        {% for nuc in track_and_cache_data.nuc %}
             <tr>
                 <td>{{ loop.index }}</td>
                 <! index是jinja2内置的属性>
-                <td>{{ track_and_cache_data.nuc.name }}</td>
-                <td>{{ track_and_cache_data.nuc.token }}</td>
-                <td>{{ track_and_cache_data.nuc.last }}</td>
+                <td>{{ nuc.name }}</td>
+                <td>{{ nuc.token }}</td>
+                <td>{{ nuc.last }}</td>
                 <td>{{ track_and_cache_data.last_update }}</td>
                 <td>
-                    <button name="save tracked data" value="{{ track_and_cache_data.nuc.token }}">保存追踪的数据</button>
+                    <button name="save tracked data" value="{{ nuc.token }}">保存追踪的数据</button>
                 </td>
             </tr>
         {% endfor %}
